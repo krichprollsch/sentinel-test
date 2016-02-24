@@ -1,0 +1,48 @@
+master:
+    hostname: master
+    image: redis:alpine
+    command: [redis-server, /etc/redis/redis.conf]
+    volumes:
+        - ./test/master:/etc/redis
+    ports:
+        - 6379
+slave:
+    hostname: slave
+    image: redis:alpine
+    links:
+        - master
+    command: [redis-server, /etc/redis/redis.conf]
+    volumes:
+        - ./test/slave:/etc/redis
+    ports:
+        - 6379
+s1:
+    image: redis:alpine
+    links:
+        - master
+        - slave
+    volumes:
+        - ./test/s1:/data/redis
+    command: [redis-server, /data/redis/sentinel.conf, --sentinel]
+    ports:
+        - 26379
+s2:
+    image: redis:alpine
+    links:
+        - master
+        - slave
+    volumes:
+        - ./test/s2:/data/redis
+    command: [redis-server, /data/redis/sentinel.conf, --sentinel]
+    ports:
+        - 26379
+s3:
+    image: redis:alpine
+    links:
+        - master
+        - slave
+    volumes:
+        - ./test/s3:/data/redis
+    command: [redis-server, /data/redis/sentinel.conf, --sentinel]
+    ports:
+        - 26379
